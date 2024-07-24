@@ -4,6 +4,7 @@
 ## Introduction
 
 Please note: this is an unofficial snap of the tailscale debian package.
+See [here](https://github.com/tailscale/tailscale/issues/267#issuecomment-2249033007) for more information.
 
 This is the upstream repository for the **unofficial** tailscale snap!
 
