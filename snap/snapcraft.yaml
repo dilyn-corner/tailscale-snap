@@ -1,0 +1,107 @@
+name: tailscale
+base: core22
+adopt-info: tailscale
+summary: The easiest, most secure, cross platform way to use WireGuard, oauth2, 2FA/SSO
+description: |
+  Please note: this is an unofficial snap of the tailscale debian package.
+
+  All license information can be found in the licenses/ directory of this snap!
+
+  The easiest, most secure, cross platform way to use WireGuard + oauth2 + 2FA/
+  SSO
+
+  Usage:
+  Ensure all interfaces are connected:
+  snap connections tailscale
+
+
+  Make sure the tailscaled service is running:
+  snap info tailscale
+  # Should say "tailscale.tailscaled: simple, enabled, active"
+  # If it isn't running:
+  snap start --enable tailscale.tailscaled
+
+
+  If a different port for tailscale to use is required (default: 41641):
+  snap set tailscale port=<port>
+
+
+  Set the tailscale internet 'up':
+  sudo tailscale --socket /var/snap/tailscale/common/tailscaled.socket up
+
+
+  Open the URL that command spits out into a web browser and login to your
+  tailscale account. That connection will remain active for as long as the
+  tailscale daemon tailscaled is running. Namely, the connection will NOT
+  autostart on login.
+  Enabling persistent connections across reboots is a "TODO" :)
+  
+license: "Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-NC-4.0 AND ISC AND MIT"
+contact: dilyn.corner@tutanota.com
+website: https://tailscale.com
+source-code: https://github.com/dilyn-corner/tailscale-snap
+issues: https://github.com/dilyn-corner/tailscale-snap/issues
+
+# Currently under development. Upgrade to stable once finalized.
+grade: devel
+# strict confinement awaiting autoconnection approval for:
+# firewall-control
+# network-control
+# network-observe
+confinement: devmode
+
+# Build a version for all valid architectures
+architectures:
+  - amd64
+  - arm64
+  - armhf
+  - ppc64el
+  - s390x
+  - riscv64
+
+# Add the official tailscale repository to the build environment
+package-repositories:
+  - type: apt
+    suites: [jammy]
+    components: [main]
+    key-id: 2596A99EAAB33821893C0A79458CA832957F5868 
+    url: https://pkgs.tailscale.com/stable/ubuntu
+
+parts:
+  tailscale:
+    plugin: dump
+    source: src/
+    stage-packages: [tailscale]
+    override-pull: |
+      craftctl default
+
+      # Set the version of the snap to the official tailscale release
+      # TODO: If there are relver bumps to this snap, we may want to append a "-<relver>"
+      craftctl set version="$(dpkg-deb -f "${CRAFT_PART_BUILD}/../stage_packages/tailscale_"*.deb Version)"
+
+      install -Dm644 "${CRAFT_PROJECT_DIR}/LICENSE" \
+        "${CRAFT_PART_INSTALL}/licenses/snap.license"
+
+apps:
+  # This provides the entirety of the tailscale binary interface
+  # Currently, the only tested feature is "tailscale up"
+  tailscale:
+    command: usr/bin/tailscale
+    plugs:
+      - firewall-control
+      - network
+      - network-bind
+      - network-control
+      - network-observe
+
+  # This is a approximate clone of /usr/lib/systemd/system/tailscald.service
+  tailscaled:
+    daemon: simple
+    command: tailscale-daemon start
+    stop-command: tailscale-daemon stop
+    plugs:
+      - firewall-control
+      - network
+      - network-bind
+      - network-control
+      - network-observe

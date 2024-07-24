@@ -1,0 +1,14 @@
+#!/bin/sh -eux
+
+# End users can set their own port for tailscale to use via:
+# snap set tailscale port=<port>
+# The tailscaled daemon will then pickup the new port.
+# Of course if a user has no preference set the port tailscale usually chooses.
+[ -n "$(snapctl get port)" ] || {
+	snapctl set port=41641
+}
+
+# Restart the service if the port number gets set by the user
+if snapctl services "${SNAP_INSTANCE_NAME}.tailscaled" | grep --q inactive; then
+	snapctl restart "${SNAP_INSTANCE_NAME}.tailscaled"
+fi

@@ -1,0 +1,14 @@
+#!/bin/sh -eux
+
+start() {
+  tailscaled \
+    --state "${SNAP_COMMON}/tailscaled.state"   \
+    --socket "${SNAP_COMMON}/tailscaled.socket" \
+    --port "$(snapctl get port)"
+}
+
+stop() {
+  tailscaled --cleanup
+}
+
+"$@"
