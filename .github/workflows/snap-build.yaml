@@ -1,0 +1,32 @@
+name: tailscale snap build
+
+# Run the jobs on:
+#   1) 12PM UTC weekly on Monday
+# Pending upstream approval of a name
+# on:
+#   schedule:
+#     - cron: '0 12 * * 1'
+#   workflow_dispatch:
+
+jobs:
+  build_tailscale:
+    name: Build job for tailscale snap
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build of tailscale snap
+        uses: snapcore/action-build@v1
+        id: build
+        with:
+          build-info: true
+          snapcraft-channel: 8.x/stable
+      - run: |
+          sudo snap install --dangerous ${{ steps.build-snap.outputs.snap }}
+      - name: Upload of tailscale snap
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+        with:
+          snap: ${{ steps.build.outputs.snap }}
+          release: edge
