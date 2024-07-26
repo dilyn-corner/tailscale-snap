@@ -104,11 +104,8 @@ Set the tailscale interface 'up':
 
 
 Open the URL that command spits out into a web browser and login to your
-tailscale account. That connection will remain active for as long as the
-tailscaled daemon is running (or for as long as the session is valid). Namely,
-the connection will NOT autostart on login.
-
-Enabling persistent connections across reboots is a "TODO" :)
+tailscale account. That connection will remain active for as long as the session
+is valid.
 
 
 # Issues

@@ -32,9 +32,7 @@ description: |
 
   Open the URL that command spits out into a web browser and login to your
   tailscale account. That connection will remain active for as long as the
-  tailscale daemon tailscaled is running. Namely, the connection will NOT
-  autostart on login.
-  Enabling persistent connections across reboots is a "TODO" :)
+  tailscale session is valid.
   
 license: "Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND CC-BY-NC-4.0 AND ISC AND MIT"
 contact: dilyn.corner@tutanota.com
